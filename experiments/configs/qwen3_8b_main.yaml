@@ -1,0 +1,48 @@
+# Main-experiment config for Qwen3-8B (Apr 2025 release, dense, Apache 2.0).
+# Non-thinking instruction-tuned variant --- deterministic eval without
+# chain-of-thought traces (important for span-F1, EM, pass@1 integrity).
+model: Qwen/Qwen3-8B
+tasks: [ner, qa, sum, code]
+seeds: [42, 1337, 2024]
+methods:
+  - name: full_ft
+  - name: lora
+  - name: tg_lora
+    fvs_path: experiments/results/fvs_qwen3_8b.json
+    tau: 0.5
+  - name: ewc
+    ewc_lambda: 500.0
+  - name: sdft
+    distill_weight: 0.5
+  - name: lora_replay
+    replay_frac: 0.1
+
+training:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate_lora: 2.0e-4
+  learning_rate_full: 2.0e-5
+  num_train_epochs: 3
+  warmup_ratio: 0.03
+  bf16: true
+  gradient_checkpointing: true
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules:       # used by "lora" and "lora_replay"; tg_lora overrides
+    [q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj]
+
+# Qwen3-specific generation flag --- Qwen3 supports "thinking" and
+# "non-thinking" modes. Force non-thinking for deterministic scoring.
+generation:
+  enable_thinking: false
+  do_sample: false
+  temperature: 0.0
+
+eval_subsample:
+  ner: 1000
+  qa: 1000
+  sum: 500
+  code_humaneval: 164   # full HumanEval
