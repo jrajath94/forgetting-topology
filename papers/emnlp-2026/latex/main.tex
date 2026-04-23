@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+
+% ARR submission: anonymous review mode.
+% Swap "review" -> "final" for camera-ready.
+\usepackage[review]{acl}
+
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{makecell}
+\usepackage{subcaption}
+
+% Custom commands
+\newcommand{\fvs}{\textsc{FVS}}
+\newcommand{\tglora}{TG-LoRA}
+\newcommand{\method}{\tglora}
+
+% Pending-result marker. Renders as visible red "[PENDING: key]" in review
+% mode so no unfilled number can silently ship. ``scripts/fill_results.py``
+% rewrites each \pend{key} to the measured value once experiments land.
+% \detokenize protects keys that contain underscores from math-mode parsing.
+\newcommand{\pend}[1]{\textcolor{red}{\textbf{[PENDING:\,\detokenize{#1}]}}}
+
+% Placeholder figure -- renders a grey box labelled with the intended content.
+% Replace \pfig{...}{...} with \includegraphics once the real PDF is available.
+\newcommand{\pfig}[2]{%
+  \fbox{\parbox{0.95\linewidth}{%
+    \centering\vspace{0.4in}%
+    \textcolor{red}{\textbf{[PENDING FIGURE]}}\\[0.5em]%
+    \textit{#1}\\[0.3em]%
+    \footnotesize source: \detokenize{#2}%
+    \vspace{0.4in}%
+  }}%
+}
+
+\title{The Forgetting Topology: Mapping Catastrophic Forgetting\\
+Across Transformer Components to Enable Targeted\\
+Parameter-Efficient Fine-Tuning}
+
+\author{Anonymous ACL submission}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract.tex}
+\end{abstract}
+
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_method.tex}
+\input{sections/04_experiments.tex}
+\input{sections/05_results.tex}
+\input{sections/06_discussion.tex}
+\input{sections/07_conclusion.tex}
+
+\section*{Limitations}
+\input{sections/08_limitations.tex}
+
+\section*{Ethics Statement}
+\input{sections/09_ethics.tex}
+
+\bibliography{references}
+
+\appendix
+\input{sections/A_reproducibility.tex}
+
+\end{document}

@@ -1,0 +1,9 @@
+{
+  "span_f1": 0.0,
+  "precision": 0.0,
+  "recall": 0.0,
+  "n_eval": 20,
+  "n_train": 50,
+  "model": "Qwen/Qwen3-1.7B",
+  "wall_seconds": 133.3018443584442
+}
