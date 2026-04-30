@@ -1,0 +1,19 @@
+\section{Introduction}
+\label{sec:intro}
+
+% ~1 page; final numbers filled by scripts/fill_results.py when results land.
+
+Large language models routinely undergo sequential fine-tuning for alignment, domain adaptation, and chained task specialisation, yet each adaptation carries a known cost: \textit{catastrophic forgetting} \citep[e.g.,][]{mccloskey1989catastrophic, french1999catastrophic, kirkpatrick2017ewc}. Parameter-efficient fine-tuning (PEFT) methods such as LoRA \citep{hu2022lora} partially mitigate this phenomenon by constraining updates to a low-rank subspace, but they do so \textit{uniformly} across the transformer, adapting every queried, keyed, and MLP projection with the same rank and target set.
+
+We argue that this uniformity is unwarranted. Mechanistic interpretability work has shown that transformer components serve strikingly different functional roles \citep{elhage2021mathematical, meng2022locating, geva2023dissecting}: early layers encode general linguistic features, some attention heads act as ``anchor'' circuits for named-entity resolution, and late-layer MLPs tend to store task-specific associations. If function varies by component, then \textit{vulnerability to forgetting should vary by component}.
+
+This paper tests that hypothesis. Concurrent work has begun to analyse forgetting via gradient attribution \citep{anon2026mechforget, lrdistribution2024} and to localise attention heads for new-task adaptation \citep{yin2024lofit}. We complement this line in two directions: we use \textit{causal} intervention rather than gradient attribution, and we invert the localisation objective from adaptation to \textit{resistance}. Our contributions are:
+
+\begin{itemize}
+  \item The first \textbf{causally-traced} per-component forgetting topology for Qwen3-8B and Llama-3.1-8B across a four-task sequence, using ROME-style counterfactual intervention.
+  \item The \textbf{Forgetting Vulnerability Score} (\fvs{}), a transferable metric that predicts component vulnerability before running downstream tasks.
+  \item \textbf{\tglora{}}, the first PEFT method to operationalise a forgetting map: LoRA restricted to the $50\%$ most resistant components. \tglora{} matches standard LoRA on current tasks while reducing prior-task forgetting by \pend{forget_reduction_pct}.
+  \item Empirical arbitration between gradient-attribution and causal-intervention accounts of \textit{which} components drive forgetting.
+\end{itemize}
+
+Our findings align with the EMNLP 2026 special theme on explainability: the forgetting topology \textit{is} an explanation. It answers not only \textit{whether} a fine-tune will erode prior capabilities, but \textit{where} in the network that erosion will occur.

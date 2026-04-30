@@ -1,0 +1,194 @@
+# =============================================================================
+# .gitignore — Forgetting Topology Research Repository
+#
+# Strict policy: anything that is not intentional source MUST NOT enter the
+# repository. The matrix is "is this file generated, secret, or large?" -- if
+# yes to any, it's excluded.
+# =============================================================================
+
+# ---- Secrets and credentials -----------------------------------------------
+# Never commit. If one of these ever ends up tracked, the fix is rotation,
+# not just deletion.
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*_token*
+*token.json
+*credentials*
+*.cred
+secret*
+secrets*
+api_keys*
+.netrc
+.npmrc
+auth.json
+config.local.*
+
+# Project-specific sensitive files (carry over from upstream conventions)
+openclaw.json
+whoop-token.json
+discord_bot_config.json
+terraform.tfvars
+hf_token*
+runpod_*.json
+
+# ---- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+*.whl
+build/
+dist/
+develop-eggs/
+.installed.cfg
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.python-version
+
+# Tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+.cache/
+
+# ---- LaTeX build artifacts -------------------------------------------------
+# Keep .tex, .sty, .bst, .bib, .pdf (final output) and the section sources.
+# Drop everything pdflatex/bibtex/latexmk regenerate.
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.nav
+*.nlo
+*.out
+*.snm
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.fls
+*.fdb_latexmk
+*.bcf
+*.run.xml
+*.xdv
+*.dvi
+*-blx.bib
+*.figlist
+*.makefile
+*.figcomp
+auto/
+_minted-*
+latex_filled/
+
+# ---- Jupyter / notebooks (we do not ship notebooks) ------------------------
+*.ipynb
+.ipynb_checkpoints/
+
+# ---- Datasets and large model artifacts ------------------------------------
+# We do not redistribute weights or raw data. Anything matching these globs
+# inside experiments/data/ or experiments/checkpoints/ is generated.
+*.bin
+*.safetensors
+*.ckpt
+*.pt
+*.pth
+*.h5
+*.hdf5
+*.npz
+*.npy
+*.parquet
+*.arrow
+*.feather
+*.tar
+*.tar.gz
+*.tgz
+*.zip
+*.gz
+*.7z
+*.rar
+
+# Per-cell experiment outputs except the empty fill-template (the template
+# IS source; results JSONs are generated). Whitelist with `!` for the keep.
+experiments/results/*.json
+experiments/checkpoints/
+experiments/cache/
+experiments/runs/
+experiments/wandb/
+wandb/
+mlruns/
+runs/
+outputs/
+tmp/
+.tmp/
+!experiments/results/paper_fill_template.json
+!experiments/results/smoke_pilot_qwen3_1_7b.json
+
+# HuggingFace local caches
+.cache/huggingface/
+~/.cache/huggingface
+hf_cache/
+
+# ---- IDE / editor ----------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.bak
+.netbeans/
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.history/
+
+# ---- Operating system --------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# ---- Local logs and reports -------------------------------------------------
+*.log
+logs/
+*.pid
+*.seed
+*.gz.tmp
+.runpod/
+.claude/

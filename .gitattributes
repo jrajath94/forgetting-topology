@@ -1,0 +1,48 @@
+# =============================================================================
+# .gitattributes — line endings, language stats, and binary safety
+# =============================================================================
+
+# Default: auto line-ending normalisation
+* text=auto eol=lf
+
+# Source: text, LF
+*.py        text eol=lf
+*.tex       text eol=lf
+*.sty       text eol=lf
+*.bst       text eol=lf
+*.bib       text eol=lf
+*.md        text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.json      text eol=lf
+*.txt       text eol=lf
+*.cfg       text eol=lf
+*.ini       text eol=lf
+*.toml      text eol=lf
+*.sh        text eol=lf
+Makefile    text eol=lf
+*.gitignore text eol=lf
+
+# Binary: never normalise, never diff
+*.pdf       binary
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.bin       binary
+*.safetensors binary
+*.ckpt      binary
+*.pt        binary
+*.pth       binary
+*.parquet   binary
+
+# Linguist hints (so GitHub correctly identifies the language mix)
+papers/**           linguist-documentation
+experiments/configs/** linguist-detectable=true
+experiments/results/** linguist-detectable=false
+*.bst               linguist-vendored
+*.sty               linguist-vendored
+acl.sty             linguist-vendored
+acl_natbib.bst      linguist-vendored
+neurips_2026.sty    linguist-vendored

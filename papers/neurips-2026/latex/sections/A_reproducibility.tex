@@ -1,0 +1,72 @@
+\section{Reproducibility}
+\label{app:repro}
+
+\paragraph{Code and data.} All code, configurations, and per-cell result JSON files are provided as anonymised supplementary material for peer review, and will be released under the MIT licence at a permanent URL upon acceptance. Datasets are publicly distributed under their original licences (CoNLL-2003, SQuAD-v1.1, XSum, CodeAlpaca-20k, HumanEval). The CoNLL-2003 source used is the parquet mirror \texttt{tomaarsen/conll2003} on the Hugging Face Hub, which has schema identical to the canonical \texttt{conll2003} release.
+
+\paragraph{Hardware.} NVIDIA A40 48GB GPUs on a commercial GPU cloud. bf16 mixed precision, gradient checkpointing enabled.
+
+\paragraph{Software.} Python 3.11, PyTorch 2.4.1 + CUDA 12.4, \texttt{transformers}$\ge$5.5.0, \texttt{peft}$\ge$0.19.0, \texttt{trl}$\ge$1.1.0, \texttt{datasets}$\ge$4.0.0, \texttt{accelerate}$\ge$1.1.1. Exact pinned versions in \texttt{code/requirements.txt} in the supplement.
+
+\paragraph{Hyperparameters.} See Table~\ref{tab:hparams}.
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{lr}
+    \toprule
+    Hyperparameter & Value \\
+    \midrule
+    Optimiser                        & AdamW \\
+    $\beta_1,\,\beta_2$              & $0.9,\,0.999$ \\
+    Weight decay                     & $0.01$ \\
+    Learning rate (LoRA methods)     & $2\!\times\!10^{-4}$ \\
+    Learning rate (full FT)          & $2\!\times\!10^{-5}$ \\
+    Warmup ratio                     & $0.03$ \\
+    Effective batch size             & $16$ (4 per-device $\times$ 4 accum) \\
+    Epochs per stage                 & $3$ \\
+    Max sequence length              & $1024$ (2048 for XSum) \\
+    LoRA $r$                         & $16$ \\
+    LoRA $\alpha$                    & $32$ \\
+    LoRA dropout                     & $0.05$ \\
+    EWC $\lambda$                    & $500$ \\
+    SDFT $\alpha$ (mix weight)       & $0.5$ \\
+    Replay fraction (LoRA+Replay)    & $0.10$ \\
+    \tglora{} $\tau$                 & median $\fvs$ \\
+    Seeds                            & $\{42,\,1337,\,2024\}$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{Training hyperparameters, shared across all methods unless specified. Learning rate was selected on a held-out slice of stage-0 data by validation forgetting.}
+  \label{tab:hparams}
+\end{table}
+
+\paragraph{Seeds.} $\{42,\,1337,\,2024\}$. All tables report mean $\pm$ standard deviation over seeds.
+
+\paragraph{Statistical tests.} Paired $t$-test across seeds for forgetting reductions; Wilcoxon signed-rank as a non-parametric fallback. Spearman's $\rho$ for \fvs{} transferability; Pearson $r$ reported in the appendix for sensitivity. Significance threshold $p<0.05$ unless stated.
+
+\paragraph{Compute and carbon.} Total compute: \pend{total_a40_hrs} A40-hours. Carbon estimate: $\mathrm{kgCO_2e} = \mathrm{A40\text{-}hrs} \times 0.300\,\mathrm{kW} \times \mathrm{grid\ intensity}$, using the emissions factor of the specific grid region of the compute provider at run-time as reported by the provider's carbon dashboard. Estimated total: \pend{carbon_kgco2e} kgCO$_2$e.
+
+\paragraph{Assets and licenses.} See Table~\ref{tab:assets} for every external asset used, its source, and its licence. New assets introduced by this paper (the released code) are licensed under Apache-2.0.
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabular}{lll}
+    \toprule
+    Asset & Source / Hub ID & Licence \\
+    \midrule
+    Qwen3-8B (base)         & \texttt{Qwen/Qwen3-8B}              & Apache-2.0 \\
+    Llama-3.1-8B (base)     & \texttt{meta-llama/Llama-3.1-8B}    & Llama-3.1 Community \\
+    CoNLL-2003 (NER)        & \texttt{tomaarsen/conll2003}        & CC-BY-4.0 \\
+    SQuAD (QA)              & \texttt{rajpurkar/squad}            & CC-BY-SA-4.0 \\
+    XSum (Summarisation)    & \texttt{EdinburghNLP/xsum}          & Research-use (BBC) \\
+    HumanEval (Code)        & \texttt{openai/humaneval}           & MIT \\
+    \texttt{transformers}/\texttt{peft}/\texttt{trl}/\texttt{datasets} & HuggingFace & Apache-2.0 \\
+    PyTorch                 & \texttt{pytorch.org}                & BSD-3-Clause \\
+    \midrule
+    \textbf{This paper's code release} & anonymous mirror at submission & Apache-2.0 \\
+    \bottomrule
+  \end{tabular}
+  \caption{External assets consumed by the experiments and their licences.
+  We do not redistribute any of the upstream datasets or model weights;
+  loading is delegated to the HuggingFace Hub at the pinned revisions
+  recorded in \texttt{code/requirements.txt}. We release only analysis code.}
+  \label{tab:assets}
+\end{table}

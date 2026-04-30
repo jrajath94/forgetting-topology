@@ -1,0 +1,85 @@
+\section*{NeurIPS Paper Checklist}
+
+\begin{enumerate}
+
+\item {\bf Claims}
+    \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The abstract and Section~\ref{sec:intro} state three claims: (i) per-component forgetting follows a structural \emph{topology} that is causally traceable, (ii) the resulting Forgetting Vulnerability Score (\fvs{}) transfers across two open-weight 8B models within a measurable Spearman bound, and (iii) restricting \tglora{} to the bottom-50\% \fvs{} components reduces average prior-task forgetting on a four-stage sequence relative to standard LoRA at matched parameter count. Each claim is mapped to a results subsection: (i) Section~\ref{sec:results:topology}, (ii) Section~\ref{sec:results:transfer}, (iii) Section~\ref{sec:results:tglora}. Numerical magnitudes for each claim are reported with three seeds and paired-$t$ significance tests.
+
+\item {\bf Limitations}
+    \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The Limitations section enumerates: (i) two model families (Qwen3-8B, Llama-3.1-8B), so cross-family transfer beyond dense decoder transformers is untested; (ii) causal tracing operates at projection granularity rather than head-level (head-level forgetting is explicit future work); (iii) the four-task sequence is fixed in scope (NER\,$\to$\,QA\,$\to$\,Sum\,$\to$\,Code) and a reverse-order ablation is reported but not a full Latin-square; (iv) three seeds per cell, no learning-rate or batch-size hyperparameter sweep; (v) supervised fine-tuning only; no RLHF/DPO; (vi) MoE architectures are excluded because expert-routing complicates causal tracing; (vii) \fvs{} is computed at the component-mean level, not at the per-example level.
+
+\item {\bf Theory assumptions and proofs}
+    \item[] Question: For each theoretical result, does the paper provide the full set of assumptions and a complete (and correct) proof?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: The paper is purely empirical. The \fvs{} definition (Section~\ref{sec:method}) is a normalised aggregate of measured task-pair forgetting deltas; no formal theorem or proof is asserted.
+
+\item {\bf Experimental result reproducibility}
+    \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Section~\ref{sec:experiments} fully specifies the four-task sequence (CoNLL-2003 NER, SQuAD QA, XSum Summarisation, HumanEval Code), the two base models with HuggingFace revision pins (\texttt{Qwen/Qwen3-8B}, \texttt{meta-llama/Llama-3.1-8B}), the LoRA configuration ($r{=}16$, $\alpha{=}32$, target modules $\{q,k,v,o,\text{up},\text{down},\text{gate}\}$), the optimizer (AdamW, $\beta_1{=}0.9$, $\beta_2{=}0.999$, weight decay $0.01$, cosine schedule, $5\%$ warmup), the per-task epoch counts, the sequence length ($2048$), and the precision (bf16). Full hyperparameters are tabulated in Appendix~\ref{app:repro}, Table~\ref{tab:hparams}. The matrix orchestrator (\texttt{code/scripts/run\_matrix.py}) is committed and resumable.
+
+\item {\bf Open access to data and code}
+    \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: All four downstream datasets are publicly available on the HuggingFace Hub (\texttt{tomaarsen/conll2003} parquet mirror, \texttt{rajpurkar/squad}, \texttt{EdinburghNLP/xsum}, \texttt{openai/humaneval}); we do not redistribute them. Code is released under an Apache-2.0 license at an anonymous GitHub mirror linked from the supplementary zip during review and replaced with the canonical repository URL on acceptance. The release contains the orchestrator, causal-tracing implementation, EWC/SDFT baselines, the HumanEval pass@1 sandbox, plotting scripts, and a one-command reproduction recipe (\texttt{python code/scripts/run\_matrix.py --config experiments/configs/qwen3\_8b\_main.yaml --resume}).
+
+\item {\bf Experimental setting/details}
+    \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Section~\ref{sec:experiments}, ``Setup,'' and Appendix~\ref{app:repro} together specify train/validation/test splits for each of the four tasks, the optimizer (AdamW), learning-rate schedule (cosine, $5\%$ warmup), per-stage epoch counts, effective batch size, sequence length, precision (bf16), gradient accumulation, the full LoRA target-module set, and the causal-tracing intervention protocol (Gaussian-noise corruption at the residual stream of the source token, projection-level patch). Hyperparameters were chosen by single-seed validation on the smaller pilot model (Qwen3-1.7B) and held fixed across all 8B runs to avoid double-dipping; this protocol is stated in Section~\ref{sec:experiments}.
+
+\item {\bf Experiment statistical significance}
+    \item[] Question: Does the paper report error bars suitably and correctly defined or other appropriate information about the statistical significance of the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Each cell is run with three seeds (\{0, 1, 2\}). Tables report seed mean and standard deviation. The headline \tglora{}-vs-LoRA forgetting comparison uses a paired $t$-test on per-seed average forgetting (paired by seed) and reports a $p$-value of \pend{tglora_vs_lora_p}. Cross-family \fvs{} transfer is reported as Spearman's $\rho$ over architecturally-shared projection positions with rank-permutation $p$-values (Section~\ref{sec:results:transfer}). When comparing \tglora{} against four additional baselines (DoRA, VeRA, LOFIT, random-target control), per-pair effect sizes and unadjusted $p$-values are reported in Appendix~\ref{app:repro}; we do not claim significance against these four absent multiplicity correction.
+
+\item {\bf Experiments compute resources}
+    \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: All experiments run on a single NVIDIA A40 (48\,GB) per cell at \$0.44/GPU-hour (RunPod SECURE cloud), with bf16 precision and gradient checkpointing. The full main matrix (six methods $\times$ three seeds $\times$ two models, 36 cells) consumes \pend{total_a40_hrs} A40-hours; the four reviewer-added baseline cells (DoRA, VeRA, LOFIT, random-target on Qwen3-8B with one seed) add an additional 32 A40-hours. Total dollar cost (including preempted-and-resumed pods, so no failed-run compute is hidden) is reported in Appendix~\ref{app:repro}. Per-cell wall-clock breakdowns by stage (NER, QA, Sum, Code) are provided in the same appendix.
+
+\item {\bf Code of ethics}
+    \item[] Question: Does the research conducted in the paper conform, in every respect, with the NeurIPS Code of Ethics?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The research conforms with the NeurIPS Code of Ethics. No human subjects are involved at any stage. All four downstream benchmarks are publicly released under their original research-use licenses; we do not redistribute their content. The two base models (Qwen3-8B, Llama-3.1-8B) are open-weight and used under their respective licences. Trained adapter checkpoints from our matrix are not published (they encode no novel pre-training data and reproduce trivially from the released code).
+
+\item {\bf Broader impacts}
+    \item[] Question: Does the paper discuss both potential positive societal impacts and negative societal impacts of the work performed?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The Broader Impacts section discusses the positive impact (efficient continual fine-tuning that reduces compute waste and carbon cost compared to retraining from scratch when downstream tasks evolve, and a diagnostic tool, \fvs{}, that practitioners can apply to predict which components will be eroded under sequential adaptation) and the potential negative impact (the same topology, used adversarially, could indicate which components an attacker should aim to corrupt to maximally degrade prior task performance --- a concern shared with any localisation-based interpretability work). Mitigations: code is released, the method is published openly so detection benefits accrue symmetrically, and we do not release attack tooling.
+
+\item {\bf Safeguards}
+    \item[] Question: Does the paper describe safeguards that have been put in place for responsible release of data or models that have a high risk for misuse (e.g., pre-trained language models, image generators, or scraped datasets)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: The paper releases analysis code only. No new pre-trained model weights, image generators, or scraped datasets are introduced. The trained \tglora{} adapters can be regenerated from the released orchestrator and are not redistributed.
+
+\item {\bf Licenses for existing assets}
+    \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: Each used asset is credited and its licence is listed in Appendix~\ref{app:repro}, Table~\ref{tab:assets}: \texttt{Qwen/Qwen3-8B} (Apache-2.0), \texttt{meta-llama/Llama-3.1-8B} (Llama 3.1 Community License), \texttt{tomaarsen/conll2003} (CC-BY-4.0; original CoNLL-2003 license preserved), \texttt{rajpurkar/squad} (CC-BY-SA-4.0), \texttt{EdinburghNLP/xsum} (research-use, original BBC content via news redistribution), \texttt{openai/humaneval} (MIT), HuggingFace \texttt{transformers}/\texttt{peft}/\texttt{trl}/\texttt{datasets} (Apache-2.0), PyTorch (BSD-3-Clause).
+
+\item {\bf New assets}
+    \item[] Question: Are new assets introduced in the paper well documented and is the documentation provided alongside the assets?
+    \item[] Answer: \answerYes{}
+    \item[] Justification: The new asset is the source code release, which contains a top-level \texttt{README.md}, an installation recipe (\texttt{requirements.txt}), per-module docstrings for the seven core modules (\texttt{forgetting\_map/}, \texttt{evaluation/}, \texttt{scripts/}), example invocations for each main entry point, and the \fvs{} JSON schema documented in \texttt{experiments/results/SCHEMA.md}. The release is licensed Apache-2.0.
+
+\item {\bf Crowdsourcing and research with human subjects}
+    \item[] Question: For crowdsourcing experiments and research with human subjects, does the paper include the full text of instructions given to participants and screenshots, if applicable, as well as details about compensation (if any)?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: No crowdsourcing or human-subjects research is involved at any stage.
+
+\item {\bf Institutional review board (IRB) approvals or equivalent for research with human subjects}
+    \item[] Question: Does the paper describe potential risks incurred by study participants, whether such risks were disclosed to the subjects, and whether Institutional Review Board (IRB) approvals (or an equivalent approval/review based on the requirements of your country or institution) were obtained?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: No human subjects are involved at any stage; IRB review is not applicable.
+
+\item {\bf Declaration of LLM usage}
+    \item[] Question: Does the paper describe the usage of LLMs if it is an important, original, or non-standard component of the core methods in this research?
+    \item[] Answer: \answerNA{}
+    \item[] Justification: LLMs are the \emph{subject} of study, not a methodological component. The causal tracing, \fvs{} aggregation, EWC/SDFT/replay baselines, \tglora{} target selection, and pass@1 evaluation pipelines are deterministic numerical procedures implemented in PyTorch, HuggingFace \texttt{transformers}, and \texttt{peft}. No LLM is used as part of the core methodology, scientific reasoning, or analysis. LLM-based assistance was used for manuscript drafting and code review; per the NeurIPS LLM policy, this kind of writing assistance does not require declaration as a methodological component.
+
+\end{enumerate}

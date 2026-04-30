@@ -1,0 +1,94 @@
+\documentclass{article}
+
+% NeurIPS 2026 main-track double-blind submission. The default (no flag)
+% triggers anonymisation, line numbers, and the submission footer. Swap to
+% [final] for camera-ready and to [preprint] for arXiv pre-prints.
+\usepackage{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{makecell}
+
+% --- Custom paper macros -----------------------------------------------------
+\newcommand{\fvs}{\textsc{FVS}}
+\newcommand{\tglora}{TG-LoRA}
+\newcommand{\method}{\tglora}
+
+% Pending-result marker. Renders as visible red "[PENDING: key]" so no
+% unfilled number can silently ship. ``code/scripts/fill_results.py``
+% rewrites each \pend{key} to the measured value once experiments land.
+% \detokenize protects keys with underscores from math-mode parsing.
+\newcommand{\pend}[1]{\textcolor{red}{\textbf{[PENDING:\,\detokenize{#1}]}}}
+
+% Placeholder figure -- renders a grey box labelled with the intended content.
+% Replace \pfig{...}{...} with \includegraphics once the real PDF is available.
+\newcommand{\pfig}[2]{%
+  \fbox{\parbox{0.95\linewidth}{%
+    \centering\vspace{0.4in}%
+    \textcolor{red}{\textbf{[PENDING FIGURE]}}\\[0.5em]%
+    \textit{#1}\\[0.3em]%
+    \footnotesize source: \detokenize{#2}%
+    \vspace{0.4in}%
+  }}%
+}
+% -----------------------------------------------------------------------------
+
+\title{The Forgetting Topology: Mapping Catastrophic Forgetting Across
+Transformer Components to Enable Targeted Parameter-Efficient Fine-Tuning}
+
+% Anonymous block; [eandd]/[final] flags rewrite this automatically.
+\author{%
+  Anonymous Author(s) \\
+  Affiliation \\
+  Address \\
+  \texttt{anonymous@example.com}%
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00_abstract.tex}
+\end{abstract}
+
+\input{sections/01_introduction.tex}
+\input{sections/02_related_work.tex}
+\input{sections/03_method.tex}
+\input{sections/04_experiments.tex}
+\input{sections/05_results.tex}
+\input{sections/06_discussion.tex}
+\input{sections/07_conclusion.tex}
+
+% Limitations is recommended (not strictly required) by NeurIPS 2026; we
+% include it because the Paper Checklist points reviewers to it.
+\section*{Limitations}
+\input{sections/08_limitations.tex}
+
+% Broader Impacts is optional under the 2026 main-track rules but the
+% checklist references this section by name. We keep it even though we
+% would otherwise place this material under "Ethics Statement".
+\section*{Broader Impacts}
+\input{sections/09_ethics.tex}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\appendix
+\input{sections/A_reproducibility.tex}
+
+% NeurIPS Paper Checklist (mandatory; does not count toward the page limit;
+% papers without it are desk-rejected per the Main Track Handbook).
+\input{checklist}
+
+\end{document}

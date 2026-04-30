@@ -1,0 +1,47 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Preliminaries: Sequential Fine-Tuning}
+\label{sec:method:seq}
+
+Let $\mathcal{M}_\theta$ denote a transformer LM with parameters $\theta$, and let $\mathcal{T} = (T_1, T_2, \dots, T_K)$ be an ordered sequence of $K$ downstream tasks. Starting from pre-trained weights $\theta_0$, we obtain a sequence of adapted models $\theta_1, \dots, \theta_K$ by fine-tuning on each task in turn. After stage $k$, we define the per-task forgetting of task $T_j$ ($j<k$) as
+\begin{equation}
+\mathrm{Forget}_j^{(k)} \;=\; \mathrm{Acc}_{T_j}(\theta_j) - \mathrm{Acc}_{T_j}(\theta_k).
+\end{equation}
+We also report backward transfer (BWT) from \citet{lopez2017gem} and average prior-task forgetting $\bar{\mathrm{Forget}}^{(K)} = \frac{1}{K-1}\sum_{j<K} \mathrm{Forget}_j^{(K)}$.
+
+\subsection{Per-Component Forgetting Attribution}
+\label{sec:method:attribution}
+
+A transformer component $c \in \mathcal{C}$ is an attention or MLP projection at layer $\ell$ (we operate at projection granularity; head-level refinement is discussed in \S\ref{sec:limitations}). For each $c$, we construct a \textit{counterfactual} $\theta_k^{(\bar c)}$ that restores $c$ to its stage-$(k{-}1)$ value while leaving every other component at its stage-$k$ value. For LoRA-trained models, the intervention zeroes the adapter delta $B_c A_c$ for component $c$; for full fine-tuning, it overwrites the base weight with its pre-stage snapshot.
+
+The per-component forgetting contribution of $c$ at stage $k$ for a prior task $T_j$ is
+\begin{equation}
+\label{eq:F-per-comp}
+\mathcal{F}_c^{(j,k)} \;=\; \mathrm{Acc}_{T_j}(\theta_k^{(\bar c)}) \;-\; \mathrm{Acc}_{T_j}(\theta_k).
+\end{equation}
+A large positive $\mathcal{F}_c^{(j,k)}$ indicates that \textit{reverting $c$} recovers forgotten behaviour, i.e., $c$ \textit{is} a forgetting site. This is causal tracing \citep{meng2022locating} applied to forgetting rather than to factual knowledge.
+
+\subsection{Forgetting Vulnerability Score}
+\label{sec:method:fvs}
+
+We aggregate $\mathcal{F}_c^{(j,k)}$ across all forward task pairs to obtain the \fvs{}:
+\begin{equation}
+\label{eq:FVS}
+\fvs(c) \;=\; \frac{1}{Z} \sum_{k=2}^{K} \sum_{j<k} w_{jk} \, \max\!\big(0,\, \mathcal{F}_c^{(j,k)}\big),
+\end{equation}
+where $Z$ is a per-model normalizer chosen so $\fvs(c) \in [0,1]$ and $w_{jk} = (K - k)$ weights earlier-stage tasks proportionally to the number of subsequent fine-tunes they must survive. High-\fvs{} components drive forgetting; low-\fvs{} components are resistant.
+
+\subsection{Topology-Guided LoRA (\tglora{})}
+\label{sec:method:tglora}
+
+Standard LoRA applies rank-$r$ adapters to a fixed target set $\mathcal{A}_{\mathrm{std}}$ --- typically all $\{q, k, v, o, \mathrm{gate}, \mathrm{up}, \mathrm{down}\}$ projections. \tglora{} replaces $\mathcal{A}_{\mathrm{std}}$ with
+\begin{equation}
+\mathcal{A}_{\tglora{}} \;=\; \{\, c \in \mathcal{A}_{\mathrm{std}} \;:\; \fvs(c) \le \tau \,\},
+\end{equation}
+where by default $\tau = \mathrm{median}_{c \in \mathcal{A}_{\mathrm{std}}} \fvs(c)$, i.e., the $50\%$ most \textit{resistant} components are retained as adaptation targets. \tglora{} thus adapts only forgetting-resistant components, on the intuition that updating vulnerable components is what drives the forgetting we wish to avoid, while updating resistant components is both safe for prior tasks and sufficient for downstream adaptation. Rank, $\alpha$, and dropout are unchanged from standard LoRA ($r{=}16$, $\alpha{=}32$, dropout $0.05$).
+
+\subsection{Transferability Hypothesis}
+\label{sec:method:transfer}
+
+If \fvs{} captures an architectural regularity rather than a model-specific artefact, then \fvs{} computed on model $A$ should correlate with \fvs{} computed on a second model $B$ that shares the same projection layout. We test this by computing Spearman's $\rho$ between $\fvs^{A}$ and $\fvs^{B}$ over architecturally-corresponding components, indexed by $(\ell, \mathrm{kind})$. A correlation $\rho > 0.6$ would enable \fvs{} to be amortised across an architecture family: one trace run, many deployments. We report the measured value in \S\ref{sec:results:transfer} and scope the claim to the tested family (\S\ref{sec:limitations}).

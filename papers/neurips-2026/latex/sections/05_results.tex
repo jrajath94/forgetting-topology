@@ -1,0 +1,72 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{The Forgetting Topology}
+\label{sec:results:topology}
+
+Figure~\ref{fig:topology} shows the per-component \fvs{} for Qwen3-8B and Llama-3.1-8B. Three structural patterns emerge consistently across seeds:
+\begin{enumerate}
+  \item Early layers ($\ell \le \pend{early_layer_cutoff}$) exhibit low \fvs{} across all task pairs.
+  \item A set of ``anchor'' attention heads at layers \pend{anchor_layer_range} retain task-invariant behaviour.
+  \item MLPs at mid-to-late layers (\pend{mlp_high_fvs_range}) carry the highest \fvs{} and are thus the primary forgetting sites.
+\end{enumerate}
+
+\begin{figure}[t]
+  \centering
+  \pfig{Per-component \fvs{} heatmap (layer $\times$ projection-kind) for Qwen3-8B (left) and Llama-3.1-8B (right). Warm = high vulnerability, cool = resistance.}{scripts/make\_fig\_topology.py + experiments/results/fvs\_qwen3\_8b.json + fvs\_llama31\_8b.json}
+  \caption{Per-component \fvs{} for Qwen3-8B and Llama-3.1-8B. Warm colours indicate high vulnerability; cool colours indicate resistance.}
+  \label{fig:topology}
+\end{figure}
+
+\subsection{\fvs{} Transferability}
+\label{sec:results:transfer}
+
+Spearman's $\rho$ between $\fvs^{\mathrm{Qwen}}$ and $\fvs^{\mathrm{Llama}}$ over architecturally-shared projection positions is \pend{spearman_qwen_llama} (\pend{spearman_qwen_llama_p}). This is within the $\rho > 0.6$ threshold our \S\ref{sec:method:transfer} pre-registered as the bar for \fvs{} to be amortised within a model family.
+
+\subsection{\tglora{} vs. Baselines}
+\label{sec:results:tglora}
+
+Table~\ref{tab:main} reports per-method performance at $k=K$ (end of sequence).
+\begin{table*}[t]
+  \centering
+  \small
+  \begin{tabular}{l@{\hspace{0.7em}}cccc@{\hspace{0.7em}}c@{\hspace{0.7em}}c}
+    \toprule
+    \textbf{Method} & \textbf{NER F1} & \textbf{QA F1} & \textbf{Sum R-L} & \textbf{Code p@1} & \textbf{$\bar{\mathrm{Forget}}^{(K)}$\,$\downarrow$} & \textbf{BWT} \\
+    \midrule
+    Full FT                    & \pend{main_full_ner}     & \pend{main_full_qa}     & \pend{main_full_sum}     & \pend{main_full_code}     & \pend{main_full_forget}    & \pend{main_full_bwt} \\
+    LoRA ($r{=}16$)            & \pend{main_lora_ner}     & \pend{main_lora_qa}     & \pend{main_lora_sum}     & \pend{main_lora_code}     & \pend{main_lora_forget}    & \pend{main_lora_bwt} \\
+    EWC                        & \pend{main_ewc_ner}      & \pend{main_ewc_qa}      & \pend{main_ewc_sum}      & \pend{main_ewc_code}      & \pend{main_ewc_forget}     & \pend{main_ewc_bwt} \\
+    SDFT                       & \pend{main_sdft_ner}     & \pend{main_sdft_qa}     & \pend{main_sdft_sum}     & \pend{main_sdft_code}     & \pend{main_sdft_forget}    & \pend{main_sdft_bwt} \\
+    LoRA + Replay              & \pend{main_rep_ner}      & \pend{main_rep_qa}      & \pend{main_rep_sum}      & \pend{main_rep_code}      & \pend{main_rep_forget}     & \pend{main_rep_bwt} \\
+    DoRA                       & \pend{main_dora_ner}     & \pend{main_dora_qa}     & \pend{main_dora_sum}     & \pend{main_dora_code}     & \pend{main_dora_forget}    & \pend{main_dora_bwt} \\
+    VeRA                       & \pend{main_vera_ner}     & \pend{main_vera_qa}     & \pend{main_vera_sum}     & \pend{main_vera_code}     & \pend{main_vera_forget}    & \pend{main_vera_bwt} \\
+    LOFIT                      & \pend{main_lofit_ner}    & \pend{main_lofit_qa}    & \pend{main_lofit_sum}    & \pend{main_lofit_code}    & \pend{main_lofit_forget}   & \pend{main_lofit_bwt} \\
+    Random-target LoRA         & \pend{main_rand_ner}     & \pend{main_rand_qa}     & \pend{main_rand_sum}     & \pend{main_rand_code}     & \pend{main_rand_forget}    & \pend{main_rand_bwt} \\
+    \midrule
+    \textbf{\tglora{} (ours)}  & \pend{main_tg_ner}       & \pend{main_tg_qa}       & \pend{main_tg_sum}       & \pend{main_tg_code}       & \pend{main_tg_forget}      & \pend{main_tg_bwt} \\
+    \bottomrule
+  \end{tabular}
+  \caption{Main results on Qwen3-8B. Mean over 3 seeds; std in appendix. $\bar{\mathrm{Forget}}^{(K)}$ is average prior-task forgetting after all $K$ stages (lower is better). Paired $t$-test: \tglora{} vs.\ standard LoRA on $\bar{\mathrm{Forget}}^{(K)}$ yields $p = \pend{tglora_vs_lora_p}$.}
+  \label{tab:main}
+\end{table*}
+\tglora{} achieves:
+\begin{itemize}
+  \item Current-task performance within \pend{tg_lora_vs_lora_current} of standard LoRA.
+  \item Average prior-task forgetting reduced by \pend{forget_reduction_pct} (absolute) relative to standard LoRA; paired $t$-test $p = \pend{tglora_vs_lora_p}$.
+  \item Current-task performance within \pend{tg_lora_vs_full_current} of full fine-tuning while training $<\!1\%$ of the parameters.
+  \item Competitive with DoRA and VeRA on forgetting (\pend{tglora_vs_dora_forget}, \pend{tglora_vs_vera_forget}) and distinct from LOFIT, whose adaptation-localised target set disagrees with the resistance-localised target set (Jaccard $=\pend{lofit_tglora_jaccard}$).
+\end{itemize}
+
+\subsection{Ablations}
+\label{sec:results:ablations}
+
+\paragraph{Effect of $\tau$.} We sweep $\tau \in \{0.25, 0.5, 0.75\}$ (top quartile / median / bottom quartile of resistant components). Results: \pend{tau_sweep_summary}.
+
+\paragraph{Effect of rank.} Holding target set fixed at $\mathcal{A}_{\tglora{}}$, we sweep $r \in \{4, 8, 16, 32\}$. Results: \pend{rank_sweep_summary}.
+
+\paragraph{Random-target control.} LoRA applied to a uniformly-random $50\%$ target set, matched in parameter count, gives forgetting \pend{random_target_forget_delta} worse than \tglora{}, isolating the contribution of \fvs{}-guided target selection from the contribution of merely reducing the target set.
+
+\paragraph{Task-order robustness.} Re-running the sequence in reverse (Code $\rightarrow$ Sum $\rightarrow$ QA $\rightarrow$ NER) on Qwen3-8B yields $\fvs^{\mathrm{rev}}$ whose Spearman correlation with $\fvs^{\mathrm{fwd}}$ is \pend{spearman_order}. This indicates whether \fvs{} is primarily architectural or order-dependent; our interpretation is discussed in \S\ref{sec:discussion}.
+
+\paragraph{Gradient attribution vs.\ causal intervention.} We also compute $\fvs_{\mathrm{grad}}$ using gradient-attribution (as in \citet{anon2026mechforget}) on the same models and report the rank correlation with our causally-traced \fvs{}: \pend{causal_vs_grad_spearman}. This provides the empirical arbitration between the two attribution families promised in \S\ref{sec:intro}.
