@@ -9,10 +9,9 @@ LaTeX manuscripts for the paper:
 **The Forgetting Topology: Mapping Catastrophic Forgetting Across
 Transformer Components to Enable Targeted Parameter-Efficient Fine-Tuning.**
 
-The paper is currently in active preparation for **NeurIPS 2026**
-(main track, deadline 2026-05-06 AOE) with a fallback target of
-**EMNLP 2026 / ARR** (deadline 2026-05-25). Both manuscript variants
-live side-by-side in this repo and share section sources.
+This manuscript is prepared as an independent research contribution.
+Both manuscript variants live side-by-side in this repo and share
+section sources.
 
 ---
 
@@ -33,7 +32,7 @@ gaps.
 | Forgetting measurement  | Causal-tracing intervention, PEFT-aware      |
 | Baselines               | Full FT, LoRA, EWC, SDFT, LoRA+Replay, DoRA, VeRA, LOFIT, random-target — all implemented |
 | Evaluation              | NER (CoNLL-2003), QA (SQuAD), Sum (XSum), Code (HumanEval pass@1 sandbox) |
-| Manuscripts             | NeurIPS 2026 + EMNLP/ARR 2026 — both compile, both have unfilled `\pend{}` markers awaiting real results |
+| Manuscripts             | Independent research variants — both compile, both have unfilled `\pend{}` markers awaiting real results |
 | Main experimental matrix | Not yet executed; estimated 36 cells × ~8 GPU-hours = ~288 A40-hours |
 | Reproducibility         | All hyperparameters, asset licenses, and seeds documented (`papers/*/latex/sections/A_reproducibility.tex`) |
 
@@ -177,17 +176,6 @@ gaps.
 
 ---
 
-## Anonymised review
-
-For double-blind submission, do **not** link to this public repository
-directly: anyone can see the owner and commit log. Instead, mirror the
-relevant subset to an anonymising service such as
-[`anonymous.4open.science`](https://anonymous.4open.science) and link to
-that mirror from the supplementary zip. Replace the link with this
-repository's canonical URL after acceptance.
-
----
-
 ## Reproducibility
 
 Every hyperparameter the paper depends on is recorded in
@@ -205,18 +193,14 @@ the seed in every output JSON.
 
 ## Citation
 
-The paper is anonymous at submission time. After acceptance / public
-posting, please cite as:
-
 ```bibtex
-@inproceedings{anon2026forgettingtopology,
+@misc{anon2026forgettingtopology,
   title     = {The Forgetting Topology: Mapping Catastrophic Forgetting
                Across Transformer Components to Enable Targeted
                Parameter-Efficient Fine-Tuning},
-  author    = {Anonymous Authors},
-  booktitle = {Advances in Neural Information Processing Systems},
+  author    = {Anonymous},
   year      = {2026},
-  note      = {Under review}
+  note      = {Independent research manuscript}
 }
 ```
 
@@ -237,7 +221,7 @@ to the HuggingFace Hub at the pinned revisions in
 
 ## Acknowledgements
 
-Anonymous during NeurIPS review. We thank the maintainers of the
+We thank the maintainers of the
 HuggingFace `transformers` / `peft` / `trl` / `datasets` libraries,
 the authors of EWC, ROME, SDFT, LOFIT, DoRA, and VeRA for foundational
 work that this paper builds on, and the operators of the open-weight
