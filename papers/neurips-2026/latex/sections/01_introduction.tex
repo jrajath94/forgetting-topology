@@ -10,7 +10,7 @@ We argue that this uniformity is unwarranted. Mechanistic interpretability work 
 This paper tests that hypothesis. Concurrent work has begun to analyse forgetting via gradient attribution \citep{anon2026mechforget, lrdistribution2024} and to localise attention heads for new-task adaptation \citep{yin2024lofit}. We complement this line in two directions: we use \textit{causal} intervention rather than gradient attribution, and we invert the localisation objective from adaptation to \textit{resistance}. Our contributions are:
 
 \begin{itemize}
-  \item The first \textbf{causally-traced} per-component forgetting topology for Qwen3-8B and Llama-3.1-8B across a four-task sequence, using ROME-style counterfactual intervention.
+  \item The first \textbf{causally-traced} per-component forgetting topology for Qwen3-8B across a four-task sequence, using ROME-style counterfactual intervention.
   \item The \textbf{Forgetting Vulnerability Score} (\fvs{}), a transferable metric that predicts component vulnerability before running downstream tasks.
   \item \textbf{\tglora{}}, the first PEFT method to operationalise a forgetting map: LoRA restricted to the $50\%$ most resistant components. \tglora{} matches standard LoRA on current tasks while reducing prior-task forgetting by \pend{forget_reduction_pct}.
   \item Empirical arbitration between gradient-attribution and causal-intervention accounts of \textit{which} components drive forgetting.

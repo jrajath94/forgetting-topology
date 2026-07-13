@@ -4,7 +4,7 @@
 \subsection{The Forgetting Topology}
 \label{sec:results:topology}
 
-Figure~\ref{fig:topology} shows the per-component \fvs{} for Qwen3-8B and Llama-3.1-8B. Three structural patterns emerge consistently across seeds:
+Figure~\ref{fig:topology} shows the per-component \fvs{} for Qwen3-8B. Three structural patterns emerge consistently across seeds:
 \begin{enumerate}
   \item Early layers ($\ell \le \pend{early_layer_cutoff}$) exhibit low \fvs{} across all task pairs.
   \item A set of ``anchor'' attention heads at layers \pend{anchor_layer_range} retain task-invariant behaviour.
@@ -13,15 +13,15 @@ Figure~\ref{fig:topology} shows the per-component \fvs{} for Qwen3-8B and Llama-
 
 \begin{figure}[t]
   \centering
-  \pfig{Per-component \fvs{} heatmap (layer $\times$ projection-kind) for Qwen3-8B (left) and Llama-3.1-8B (right). Warm = high vulnerability, cool = resistance.}{scripts/make\_fig\_topology.py + experiments/results/fvs\_qwen3\_8b.json + fvs\_llama31\_8b.json}
-  \caption{Per-component \fvs{} for Qwen3-8B and Llama-3.1-8B. Warm colours indicate high vulnerability; cool colours indicate resistance.}
+  \pfig{Per-component \fvs{} heatmap (layer $\times$ projection-kind) for Qwen3-8B. Warm = high vulnerability, cool = resistance.}{scripts/make\_fig\_topology.py + experiments/results/fvs\_qwen3\_8b.json}
+  \caption{Per-component \fvs{} for Qwen3-8B. Warm colours indicate high vulnerability; cool colours indicate resistance.}
   \label{fig:topology}
 \end{figure}
 
 \subsection{\fvs{} Transferability}
 \label{sec:results:transfer}
 
-Spearman's $\rho$ between $\fvs^{\mathrm{Qwen}}$ and $\fvs^{\mathrm{Llama}}$ over architecturally-shared projection positions is \pend{spearman_qwen_llama} (\pend{spearman_qwen_llama_p}). This is within the $\rho > 0.6$ threshold our \S\ref{sec:method:transfer} pre-registered as the bar for \fvs{} to be amortised within a model family.
+Cross-model transferability of \fvs{} to other 8B-scale dense architectures (e.g., Llama-3.1-8B, Mistral) is planned as a follow-up study and will test the hypothesis that \fvs{} generalizes across architecturally-similar models. The current results are confined to Qwen3-8B.
 
 \subsection{\tglora{} vs. Baselines}
 \label{sec:results:tglora}

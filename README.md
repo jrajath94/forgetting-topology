@@ -53,9 +53,9 @@ per-component **Forgetting Vulnerability Score (FVS)** by combining
 ROME-style causal-tracing interventions across every (prior task,
 current stage) pair. Each component receives a scalar in `[0, 1]`
 indicating how much updating it during a downstream stage would cost
-on prior-task performance. We compute this map for two open-weight 8B
-models (Qwen3-8B, Llama-3.1-8B), check that it transfers between the
-two via Spearman's ρ, and then act on it.
+on prior-task performance. We compute this map for Qwen3-8B, an
+open-weight 8B model, and then act on it. Cross-model transferability
+to other 8B architectures is planned as future work.
 
 The actuation step is **Topology-Guided LoRA (TG-LoRA)**: instead of
 applying LoRA to all attention and MLP projections at every layer,
