@@ -33,7 +33,7 @@ gaps.
 | Baselines               | Full FT, LoRA, EWC, SDFT, LoRA+Replay, DoRA, VeRA, LOFIT, random-target — all implemented |
 | Evaluation              | NER (CoNLL-2003), QA (SQuAD), Sum (XSum), Code (HumanEval pass@1 sandbox) |
 | Manuscripts             | Independent research variants — both compile, both have unfilled `\pend{}` markers awaiting real results |
-| Main experimental matrix | Not yet executed; estimated 36 cells × ~8 GPU-hours = ~288 A40-hours |
+| Main experimental matrix | Not yet executed; estimated 72 cells × ~1.1 A40-hours = ~78 A40-hours total |
 | Reproducibility         | All hyperparameters, asset licenses, and seeds documented (`papers/*/latex/sections/A_reproducibility.tex`) |
 
 ---
@@ -88,7 +88,7 @@ forgetting-topology/
 │   │   └── seeds.py
 │   ├── scripts/
 │   │   ├── run_matrix.py              # End-to-end orchestrator (resumable)
-│   │   ├── smoke_pilot.py             # Single-cell smoke test (2 hr, 1 GPU)
+│   │   ├── smoke_pilot.py             # Single-cell smoke test (~2 min, 1 GPU)
 │   │   ├── make_fig_topology.py       # FVS heatmap renderer
 │   │   └── fill_results.py            # Substitutes \pend{key} -> measured value
 │   └── requirements.txt               # Pinned dependency versions
@@ -127,7 +127,7 @@ The pinned stack is `transformers>=5.5.0`, `peft>=0.19.0`, `trl>=1.1.0`,
 `datasets>=4.0.0`, and `accelerate>=1.1.1`. Earlier `transformers==4.46`
 does **not** support the `qwen3` model type.
 
-### Smoke test (single A40, ~2 hours, ~$1 on a commodity cloud)
+### Smoke test (single A40, ~2 minutes, ~$0.11 on a commodity cloud)
 
 This validates that the end-to-end pipeline works on your hardware
 before you commit to the full matrix.
