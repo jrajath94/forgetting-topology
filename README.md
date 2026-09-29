@@ -30,9 +30,9 @@ gaps.
 | ----------------------- | -------------------------------------------- |
 | Method (FVS, TG-LoRA)   | Implemented and pilot-validated              |
 | Forgetting measurement  | Causal-tracing intervention, PEFT-aware      |
-| Baselines               | Full FT, LoRA, EWC, SDFT, LoRA+Replay, DoRA, VeRA, LOFIT, random-target — all implemented |
+| Baselines               | Full FT, LoRA, EWC, SDFT, LoRA+Replay, DoRA, VeRA, LOFIT, random-target - all implemented |
 | Evaluation              | NER (CoNLL-2003), QA (SQuAD), Sum (XSum), Code (HumanEval pass@1 sandbox) |
-| Manuscripts             | Independent research variants — both compile, both have unfilled `\pend{}` markers awaiting real results |
+| Manuscripts             | Independent research variants - both compile, both have unfilled `\pend{}` markers awaiting real results |
 | Main experimental matrix | Not yet executed; estimated 72 cells × ~1.1 A40-hours = ~78 A40-hours total |
 | Reproducibility         | All hyperparameters, asset licenses, and seeds documented (`papers/*/latex/sections/A_reproducibility.tex`) |
 
