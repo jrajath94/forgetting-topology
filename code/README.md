@@ -6,10 +6,10 @@ Reference implementation for *The Forgetting Topology: Mapping Catastrophic Forg
 
 | Role | Model | Why |
 |---|---|---|
-| Primary | **Qwen3-8B** (Apr 2025) | Dense, Apache 2.0, outperforms Qwen2.5-14B. Dual thinking/non-thinking mode; we force non-thinking for deterministic eval. Note: no `-Instruct` suffix — base IS the instruct model. |
+| Primary | **Qwen3-8B** (Apr 2025) | Dense, Apache 2.0, outperforms Qwen2.5-14B. Dual thinking/non-thinking mode; we force non-thinking for deterministic eval. Note: no `-Instruct` suffix - base IS the instruct model. |
 | Second | **Llama-3.1-8B-Instruct** | Dense 8B, directly comparable architecture; widely benchmarked. |
-| Pilot | **Qwen3-1.7B** | Validated end-to-end on A40 2026-04-16 — load → LoRA rank-16 → SFTTrainer 50 samples → generate → span-F1 in 133s wall. See `experiments/results/smoke_pilot_qwen3_1_7b.json`. |
-| Excluded | Llama 4 Scout, Qwen3-MoE | MoE — incompatible with dense-attention causal tracing. Extension = future work. |
+| Pilot | **Qwen3-1.7B** | Validated end-to-end on A40 2026-04-16 - load → LoRA rank-16 → SFTTrainer 50 samples → generate → span-F1 in 133s wall. See `experiments/results/smoke_pilot_qwen3_1_7b.json`. |
+| Excluded | Llama 4 Scout, Qwen3-MoE | MoE - incompatible with dense-attention causal tracing. Extension = future work. |
 
 ## Layout
 
